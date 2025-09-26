@@ -14,6 +14,10 @@
 
 ⚡ OLMA can replace the original loss function of any supervised  time series forecasting model to improve their performance!
 
+## 🚀 Core File
+
+[📄 OLMA.py](OLMA_Main.py) — **OLMA is Hear!**.  
+
 <p align="center">
   <img src="assets/OLMA_performance.png" alt="OLMA Performance" width="600"/>
 </p>
