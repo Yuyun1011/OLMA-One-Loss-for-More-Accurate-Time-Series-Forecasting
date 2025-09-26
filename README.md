@@ -1,4 +1,11 @@
 # OLMA: One Loss for More Accurate Time Series Forecasting
+
+<p align="center">
+  <img src="https://img.shields.io/badge/arXiv-2505.11567-b31b1b.svg" alt="arXiv">
+  <img src="https://img.shields.io/badge/license-MIT-green" alt="License">
+  <img src="https://img.shields.io/badge/status-preprint-orange" alt="status">
+</p>
+
 ⚡ OLMA can replace the original loss function of any supervised  time series forecasting model to improve their performance!
 
 <p align="center">
@@ -79,8 +86,6 @@ $$
 
 Equality holds if and only if $a_{ii} = l_{ii}^{2}$ for all $i$, which requires $l_{ik} = 0$ for all $k < i$. This implies $L$ is diagonal, and consequently $A = L L^{*}$ is also diagonal. Thus, Lemma 1 is proved.
 
----
-
 **Lemma 2. (Unitary diagonalization of a Hermitian matrix)**  
 Let $A \in \mathbb{C}^{n \times n}$ be a Hermitian matrix (i.e., $A = A^* $). Then there exists a unitary matrix $U \in \mathbb{C}^{n \times n}$ (i.e., $U^* = U^{-1}$) and a real diagonal matrix $\Lambda = \text{diag}(\lambda_1, \lambda_2, \dots, \lambda_n)$ such that
 
@@ -91,12 +96,8 @@ $$
 The columns of $U$ form an orthonormal basis of $\mathbb{C}^n$ consisting of eigenvectors of $A$, and the diagonal entries of $\Lambda$ are the corresponding eigenvalues.  
 Furthermore, if $A$ is positive definite, then all eigenvalues $\lambda_i$ are positive.
 
----
-
 **Lemma 3. (Path-Connectedness of the Unitary Group)**  
 The unitary group $\mathcal{U}(n)$ is path-connected. That is, for any two unitary matrices $U, V \in \mathcal{U}(n)$, there exists a continuous function $\varphi: [0, 1] \to \mathcal{U}(n)$ such that $\varphi(0) = U$ and $\varphi(1) = V$.
-
----
 
 **Proof of Theorem 1.**  
 Let $G \in \mathbb{R}^{c \times l}$ denote $c$ correlated Gaussian stochastic processes and length $l$. For each process $G_i$, since the variables are i.i.d. Gaussian, its entropy is
@@ -131,13 +132,58 @@ $$
 
 that is, the product of the main diagonal entries is reduced. In conjunction with the entropy expression above, it can be rigorously deduced that there necessarily exists a unitary transformation that reduces the marginal entropy of the Gaussian process. Thus, **Theorem 1** is proved.
 
+## OLMA Loss
+We denote the model forecast as $\hat{Y} \in \mathbb{R}^{l \times c}$ and the label as $Y \in \mathbb{R}^{l \times c}$.  
+According to Theorem 1, applying DFT along the channel dimension reduces the marginal entropy of multivariate time series labels.  
+The channel-wise OLMA loss is:
+
+$$
+\mathcal{L}_{c} = \alpha \sum_{t=0}^{l-1}
+\big\| F_f(\hat{Y}_{t,:}) - F_f(Y_{t,:}) \big\|_1,
+$$
+
+where $0<\alpha<1$ controls the strength, and $F_f$ denotes the DFT:
+
+$$
+F_f(Y_{t,:})[k] = \sum_{n=0}^{c-1} Y_{t,n}\, e^{-2\pi i kn / c},
+\quad k=0,1,\dots,c-1.
+$$
+
+To further alleviate frequency bias, we apply both DFT and DWT along the temporal dimension.  
+The temporal loss is:
+
+$$
+\mathcal{L}_t = \beta \sum_{i=0}^{c-1} \big\| F_f(\hat{Y_{:,i}}) - F_f(Y_{:,i}) \big\|_1 + \gamma \sum_{i=0}^{c-1} \big\| F_w(\hat{Y_{:,i}}) - F_w(Y_{:,i}) \big\|_1,
+$$
+
+where $0<\beta,\gamma<1$ with $\alpha+\beta+\gamma=1$, and $F_w$ denotes DWT.  
+For $k=1,2,\dots,l/2$:
+
+$$
+Y_{2k-1,i} = \tfrac{cA_k + cD_k}{\sqrt{2}}, \quad
+Y_{2k,i}   = \tfrac{cA_k - cD_k}{\sqrt{2}}, \quad
+F_w(Y_{:,i}) = \{cA_1,\dots,cA_k, cD_1,\dots,cD_k\},
+$$
+
+where $cA$ and $cD$ are approximation and detail coefficients.
+
+Finally, the overall OLMA loss combines both channel and temporal parts:
+
+$$
+\mathcal{L}_{O} = \mathcal{L}_{t} + \mathcal{L}_{c}.
+$$
+
 ## Low Entropy Representation of Time Series
+
+As shown in Figure below, the entropy of each segment is indicated with a scatter plot, where green represents the entropy of the original sequence and orange represents the entropy after applying DFT along the channel dimension. Evidently, in most scenarios, representing time series using DFT along the channel dimension can significantly reduce their marginal entropy.
 
 <p align="center">
   <img src="assets/datasets_entropy.png" alt="OLMA Performance" width="800"/>
 </p>
 
 ## Alleviation of Frequency Bias
+
+After applying OLMA supervision, the model’s ability to learn low-frequency components is substantially enhanced, while its ability to capture high-frequency components remains largely unaffected. This provides empirical evidence that applying supervision in the frequency domain allows the network to access information across all frequency bands more directly, effectively alleviating its intrinsic frequency bias. 
 
 <p align="center">
   <img src="assets/frequency_bias_visual_1.png" alt="OLMA Performance" width="800"/>
