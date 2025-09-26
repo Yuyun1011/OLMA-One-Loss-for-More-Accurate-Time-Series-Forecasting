@@ -16,7 +16,7 @@
 
 ## 🚀 Core File
 
-[🐍 OLMA.py](OLMA.py) — **OLMA is Hear!**.  
+[🐍 OLMA.py](OLMA.py) — **OLMA Is Hear!**  
 
 <p align="center">
   <img src="assets/OLMA_performance.png" alt="OLMA Performance" width="600"/>
