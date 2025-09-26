@@ -1,9 +1,15 @@
 # OLMA: One Loss for More Accurate Time Series Forecasting
 
 <p align="center">
-  <img src="https://img.shields.io/badge/arXiv-2505.11567-b31b1b.svg" alt="arXiv">
-  <img src="https://img.shields.io/badge/license-MIT-green" alt="License">
-  <img src="https://img.shields.io/badge/status-preprint-orange" alt="status">
+  <a href="https://arxiv.org/abs/2505.11567">
+    <img src="https://img.shields.io/badge/arXiv-2505.11567-b31b1b.svg" alt="arXiv">
+  </a>
+  <a href="https://opensource.org/licenses/MIT">
+    <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License">
+  </a>
+  <a href="#">
+    <img src="https://img.shields.io/badge/status-preprint-orange.svg" alt="Status">
+  </a>
 </p>
 
 ⚡ OLMA can replace the original loss function of any supervised  time series forecasting model to improve their performance!
